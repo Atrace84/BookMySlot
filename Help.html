@@ -1,1 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookMySlot</title>
+     <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <style>
+  body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+  }
+  .container {
+      max-width: 800px;
+      margin: 50px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  h1 {
+      text-align: center;
+      margin-bottom: 20px;
+  }
+  .faq {
+      margin-bottom: 10px;
+      cursor: pointer;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+  }
+  .answer {
+      display: none;
+      padding: 10px;
+      background: #f9f9f9;
+      border-left: 3px solid #007BFF;
+      margin-bottom: 10px;
+  }
+  .search-bar {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+  }
+  .support-options {
+      margin-top: 20px;
+      text-align: center;
+  }
+  .support-options button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+  }
+  .support-options button:hover {
+      background-color: #0056b3;
+  }
+  </style>
+</head>
+<body>
+    <nav class="navbar">
+        
+        <div class= "logo" >
+             <img src="logo-removebg-preview.png" alt="Logo" id="logo">
+        </div>
+        <div class="nav-links">
+        <a href="Home.html">Home</a>
+        <a href="Services.html">Services</a>
+        <a href="About Us.html">About Us</a>
+        <a href="Contact.html">Contact</a>
+        <a href="Help.html">Help</a>
+        </div>
 
+    </nav>
+
+<!-- HELP CENTER -->
+<div class="container">
+<h1>Help Center</h1>
+
+<input type="text" id="searchInput" class="search-bar" placeholder="Search..." oninput="searchFAQ()">
+
+<div class="faq" onclick="toggleAnswer(this)">How do I book a service?</div>
+<div class="answer">Go to Home → Book Now → Select service → Choose time.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">How do I cancel my booking?</div>
+<div class="answer">Go to Booking page and click 'Cancel Existing Booking'.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">How do I know my booking was cancelled?</div>
+<div class="answer">A confirmation email will be sent to you.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">What happens if I am late for my appointment?</div>
+<div class="answer">Your appointment is automatically cancelled.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">What if I cancelled my booking by mistake?</div>
+<div class="answer">You will have to book for another available slot because when you cancel our system allows for everyone to book that reopened slot.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">How long will my meeting last?</div>
+<div class="answer">Each session lasts for only 10 minutes.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">How many students do they take per day?</div>
+<div class="answer">Only 48 students are assisted per day.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">When do they operate and for how many hours?</div>
+<div class="answer">Mondays to Fridays, 08:00–12:00 and 13:00–17:00.</div>
+
+<input type="text" id="searchInput" oninput="searchFAQ()" placeholder="Type your question...">
+
+<div id="searchResponse" class="answer" style="display:none;"></div>
+
+
+<button class="chat-toggle" onclick="openChat()">💬</button>
+
+
+<div id="chatBox" class="chat-container">
+    <div class="chat-header">
+        Help Desk
+        <span onclick="closeChat()" style="float:right;cursor:pointer;">✖</span>
+    </div>
+
+    <div id="chatBody" class="chat-body"></div>
+
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+
+
+function toggleAnswer(el) {
+    let ans = el.nextElementSibling;
+    ans.style.display = ans.style.display === "block" ? "none" : "block";
+}
+
+
+function searchFAQ() {
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let faqs = document.querySelectorAll(".faq");
+
+    faqs.forEach(faq => {
+        let text = faq.textContent.toLowerCase();
+        faq.nextElementSibling.style.display =
+            text.includes(input) && input !== "" ? "block" : "none";
+    });
+}
+
+
+function openChat() {
+    document.getElementById("chatBox").style.display = "block";
+
+
+function closeChat() {
+    document.getElementById("chatBox").style.display = "none";
+}
+
+let liveMode = false;
+
+function sendMessage() {
+    let input = document.getElementById("userInput");
+    let msg = input.value.trim();
+    let chat = document.getElementById("chatBody");
+
+    if (msg === "") return;
+
+    chat.innerHTML += `<p class="user">${msg}</p>`;
+
+    let reply = "";
+
+    if (liveMode) {
+        reply = "Agent will respond shortly.";
+    } 
+    else if (msg.toLowerCase().includes("book")) {
+        reply = "Go to Home → Book Now → Choose a slot.";
+    } 
+    else if (msg.toLowerCase().includes("cancel")) {
+        reply = "Go to Booking page → Cancel Existing Booking.";
+    } 
+    else {
+        reply = `
+        I couldn't find that.<br><br>
+        <button onclick="startLive()"> Chat with Help Desk</button>
+        `;
+    }
+
+    setTimeout(() => {
+        chat.innerHTML += `<p class="bot">${reply}</p>`;
+        chat.scrollTop = chat.scrollHeight;
+    }, 500);
+
+    input.value = "";
+}
+
+function startLive() {
+    liveMode = true;
+    let chat = document.getElementById("chatBody");
+
+    chat.innerHTML += "<p class='bot'>You are now connected to support.</p>";
+}
+
+</script>
+
+
+  
+</body>
+    
+</body>
+</html>
