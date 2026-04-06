@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reset Password</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background: #f2f5f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Container */
+.container {
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Logo */
+.logo {
+  width: 70px;
+  margin-bottom: 10px;
+}
+
+/* Title */
+h2 {
+  margin-bottom: 20px;
+}
+
+/* Input */
+.input-box input,
+#passwordSection input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+}
+
+/* Button */
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(to right, #0077b6, #00b4d8);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* OTP */
+.otp-boxes {
+  display: flex;
+  justify-content: space-between;
+  margin: 15px 0;
+}
+
+.otp {
+  width: 40px;
+  height: 45px;
+  text-align: center;
+  font-size: 18px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+/* Divider */
+.divider {
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+/* Info */
+.info {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Hidden sections */
+.hidden {
+  display: none;
+}
+
+/* Message */
+#message {
+  margin-top: 10px;
+  color: green;
+}
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Logo -->
+  <img src="logo-removebg-preview.png" alt="Logo" class="logo">
+
+  <h2>Reset Your Password</h2>
+
+  <!-- Email -->
+  <div class="input-box">
+    <input type="email" id="email" placeholder="Enter Email">
+  </div>
+
+  <button onclick="sendOTP()">Send OTP</button>
+
+  <!-- OTP Section -->
+  <div id="otpSection" class="hidden">
+    <p class="divider">Enter OTP</p>
+
+    <div class="otp-boxes">
+      <input maxlength="1" class="otp">
+      <input maxlength="1" class="otp">
+      <input maxlength="1" class="otp">
+      <input maxlength="1" class="otp">
+      <input maxlength="1" class="otp">
+      <input maxlength="1" class="otp">
+    </div>
+
+    <p class="info">Check your student email</p>
+
+    <button onclick="verifyOTP()">Verify OTP</button>
+  </div>
+
+  <!-- New Password -->
+  <div id="passwordSection" class="hidden">
+    <input type="password" id="newPassword" placeholder="New Password">
+    <button onclick="resetPassword()">Reset Password</button>
+  </div>
+
+  <p id="message"></p>
+
+</div>
+
+<script src="script.js"></script>
+<script>
+    let generatedOTP = "";
+
+// Send OTP
+function sendOTP() {
+  const email = document.getElementById("email").value;
+
+  if (email === "") {
+    alert("Enter your email");
+    return;
+  }
+
+  generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+  console.log("OTP:", generatedOTP); // Demo only
+
+  document.getElementById("otpSection").classList.remove("hidden");
+  document.getElementById("message").innerText =
+    "OTP sent to your student email (check console)";
+}
+
+// Get OTP from boxes
+function getEnteredOTP() {
+  let otp = "";
+  document.querySelectorAll(".otp").forEach(input => {
+    otp += input.value;
+  });
+  return otp;
+}
+
+// Verify OTP
+function verifyOTP() {
+  const userOTP = getEnteredOTP();
+
+  if (userOTP === generatedOTP) {
+    document.getElementById("message").innerText = "OTP Verified!";
+    document.getElementById("passwordSection").classList.remove("hidden");
+  } else {
+    alert("Invalid OTP");
+  }
+}
+
+// Reset Password
+function resetPassword() {
+  const password = document.getElementById("newPassword").value;
+
+  if (password.length < 6) {
+    alert("Password must be at least 6 characters");
+    return;
+  }
+
+  document.getElementById("message").innerText =
+    "Password successfully reset!";
+}
+
+
+</script>
+</body>
+</html>

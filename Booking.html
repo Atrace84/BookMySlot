@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BookMySlot</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <style>
+        body {
+    font-family: Arial;
+    text-align: center;
+    background: #f5f7fb;
+}
+
+/* SERVICES */
+.services button {
+    margin: 10px;
+    padding: 10px 15px;
+    background: #00a8e8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+}
+
+/* GRID */
+.slots {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 20px;
+}
+
+/* SLOT */
+.slot {
+    padding: 12px;
+    background: #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* STATES */
+.selected {
+    background: #00a8e8;
+    color: white;
+}
+
+.booked {
+    background: grey;
+    color: white;
+    pointer-events: none;
+}
+
+.lunch {
+    background: red;
+    color: white;
+    pointer-events: none;
+}
+
+/* CANCEL BUTTON */
+.cancel-btn {
+    background: crimson;
+    color: white;
+    padding: 10px 20px;
+    margin-left: 10px;
+}
+    </style>
+</head>
+<body>
+
+<h1>Book Your Slot</h1>
+
+<!-- DATE -->
+<label>Select Date:</label>
+<input type="date" id="datePicker">
+
+<!-- SERVICES -->
+<div class="services">
+    <button onclick="selectService('Financial Aid')">Financial Aid</button>
+    <button onclick="selectService('Accommodation')">Accommodation</button>
+    <button onclick="selectService('Support')">Support</button>
+</div>
+
+<p id="selected-service">Selected: None</p>
+
+<!-- SLOTS -->
+<div class="slots" id="slots-container"></div>
+
+<!-- ACTIONS -->
+<button onclick="confirmBooking()">Confirm Booking</button>
+<button class="cancel-btn" onclick="cancelBooking()">Cancel Booking</button>
+
+<script>
+    let selectedService = "";
+let selectedSlot = null;
+
+// LOAD SAVED BOOKINGS
+let bookings = JSON.parse(localStorage.getItem("bookings")) || {};
+
+// SELECT SERVICE
+function selectService(service) {
+    selectedService = service;
+    document.getElementById("selected-service").innerText = "Selected: " + service;
+}
+
+// GENERATE SLOTS
+const container = document.getElementById("slots-container");
+
+function generateSlots() {
+    container.innerHTML = "";
+
+    let selectedDate = document.getElementById("datePicker").value;
+    if (!selectedDate) return;
+
+    for (let hour = 8; hour < 17; hour++) {
+        for (let min = 0; min < 60; min += 10) {
+
+            let time = `${hour.toString().padStart(2,'0')}:${min.toString().padStart(2,'0')}`;
+            let key = selectedDate + "_" + time;
+
+            let div = document.createElement("div");
+            div.classList.add("slot");
+            div.innerText = time;
+
+            // LUNCH BREAK (12:00–13:00)
+            if (hour === 12) {
+                div.classList.add("lunch");
+                div.innerText += " (Lunch)";
+            }
+
+            // ALREADY BOOKED
+            else if (bookings[key]) {
+                div.classList.add("booked");
+            }
+
+            else {
+                div.onclick = () => selectSlot(div);
+            }
+
+            container.appendChild(div);
+        }
+    }
+}
+
+// DATE CHANGE EVENT
+document.getElementById("datePicker").addEventListener("change", generateSlots);
+
+// SELECT SLOT
+function selectSlot(el) {
+    if (selectedSlot) selectedSlot.classList.remove("selected");
+
+    el.classList.add("selected");
+    selectedSlot = el;
+}
+
+// CONFIRM BOOKING
+function confirmBooking() {
+    let date = document.getElementById("datePicker").value;
+
+    if (!date || !selectedService || !selectedSlot) {
+        alert("Please select date, service and slot");
+        return;
+    }
+
+    let time = selectedSlot.innerText;
+    let key = date + "_" + time;
+
+    bookings[key] = selectedService;
+    localStorage.setItem("bookings", JSON.stringify(bookings));
+
+    alert("Booking Confirmed!");
+    generateSlots();
+}
+
+// CANCEL BOOKING
+function cancelBooking() {
+    let date = document.getElementById("datePicker").value;
+
+    if (!date || !selectedSlot) {
+        alert("Select a booked slot to cancel");
+        return;
+    }
+
+    let time = selectedSlot.innerText;
+    let key = date + "_" + time;
+
+    if (bookings[key]) {
+        delete bookings[key];
+        localStorage.setItem("bookings", JSON.stringify(bookings));
+
+        alert("Booking Cancelled");
+        generateSlots();
+    } else {
+        alert("This slot is not booked");
+    }
+}
+</script>
+</body>
+</html>

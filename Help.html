@@ -6,7 +6,7 @@
     <title>BookMySlot</title>
      <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
-    <style>
+     <style>
   body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
@@ -61,13 +61,47 @@
   .support-options button:hover {
       background-color: #0056b3;
   }
+  .navbar {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;            
+  padding: 20px;
+}
+.left {
+  display: flex;
+  align-items: center;
+  gap: 5px; 
+}
+
+.text h2, .text span {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.text h2{
+  font-size: 28px;
+  color: black;
+}
+
+.text span {
+  font-size: 20px;
+}
+
   </style>
+    
 </head>
 <body>
     <nav class="navbar">
+        <div class="left">
         
         <div class= "logo" >
              <img src="logo-removebg-preview.png" alt="Logo" id="logo">
+        </div>
+        <div class="text">
+            <h2>BookMySlot</h2>
+            <span>Made Easy</span>
+        </div>
         </div>
         <div class="nav-links">
         <a href="Home.html">Home</a>
@@ -79,9 +113,37 @@
 
     </nav>
 
-<!-- HELP CENTER -->
+     <div id="chat-toggle" onclick="toggleChat()">
+        <img src="logo.jpeg" alt="chat logo">
+        <span>Chat with me</span>
+    </div>
+    
+    <div id="chat-window">
+        <div class="chat-header">
+        Help Support
+    </div>
+
+    <div id="chat-body">
+        <p class="bot">Hi, How can I help you today?</p>
+        <div class="suggestions">
+            <button onclick="quickReply('book')">How do I book?</button>
+            <button onclick="quickReply('login')">How do I log in?</button>
+            <button onclick="quickReply('cancel')">Cancel booking</button>
+            <button onclick="quickReply('navigate')">How to navigate?</button>
+        </div>
+        </div>
+
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type your question...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    
+</div>
+
+
+
 <div class="container">
-<h1>Help Center</h1>
+<h1>Welcome to the Help Center</h1>
 
 <input type="text" id="searchInput" class="search-bar" placeholder="Search..." oninput="searchFAQ()">
 
@@ -109,106 +171,67 @@
 <div class="faq" onclick="toggleAnswer(this)">When do they operate and for how many hours?</div>
 <div class="answer">Mondays to Fridays, 08:00–12:00 and 13:00–17:00.</div>
 
-<input type="text" id="searchInput" oninput="searchFAQ()" placeholder="Type your question...">
+ <div id="searchResponse" class="answer" style="display:none;"></div>
 
-<div id="searchResponse" class="answer" style="display:none;"></div>
-
-
-<button class="chat-toggle" onclick="openChat()">💬</button>
-
-
-<div id="chatBox" class="chat-container">
-    <div class="chat-header">
-        Help Desk
-        <span onclick="closeChat()" style="float:right;cursor:pointer;">✖</span>
-    </div>
-
-    <div id="chatBody" class="chat-body"></div>
-
-    <div class="chat-input">
-        <input type="text" id="userInput" placeholder="Type message...">
-        <button onclick="sendMessage()">Send</button>
-    </div>
+  <!-- Support options -->
+  <div class="support-options" id="supportOptions" style="display:none;">
+      <p>Your question was not found. </p>
+      <p> You can:</p>
+      <button onclick="liveChat()">Live Chat</button>
+      <button onclick="contactSupport()"> Contact Support</button>
+  </div>
 </div>
 
 <script>
+ function toggleAnswer(element) {
+      let answer = element.nextElementSibling;
+      // Hide all answers first
+      document.querySelectorAll('.answer').forEach(a => {
+          if(a !== answer) a.style.display = 'none';
+      });
+      // Toggle clicked answer
+      answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+      // Hide support options
+      document.getElementById('supportOptions').style.display = 'none';
+  }
 
+  // Search function
+  function searchFAQ() {
+      let input = document.getElementById('searchInput').value.toLowerCase();
+      let faqs = document.querySelectorAll('.faq');
+      let found = false;
 
-function toggleAnswer(el) {
-    let ans = el.nextElementSibling;
-    ans.style.display = ans.style.display === "block" ? "none" : "block";
-}
+      faqs.forEach((faq, index) => {
+          let question = faq.textContent.toLowerCase();
+          if(question.includes(input) && input !== "") {
+              // Show the matched answer
+              faq.nextElementSibling.style.display = 'block';
+              found = true;
+          } else {
+              faq.nextElementSibling.style.display = 'none';
+          }
+      });
 
+      if(!found && input !== "") {
+          // Show support options if no FAQ matches
+          document.getElementById('supportOptions').style.display = 'block';
+      } else {
+          document.getElementById('supportOptions').style.display = 'none';
+      }
+  }
 
-function searchFAQ() {
-    let input = document.getElementById("searchInput").value.toLowerCase();
-    let faqs = document.querySelectorAll(".faq");
+  // Support option functions
+  function liveChat() {
+      alert("Starting live chat... (replace with actual chat integration)");
+  }
 
-    faqs.forEach(faq => {
-        let text = faq.textContent.toLowerCase();
-        faq.nextElementSibling.style.display =
-            text.includes(input) && input !== "" ? "block" : "none";
-    });
-}
+  function contactSupport() {
+      alert("Contact us at support@bookmyslot.com or call 012 345 6789");
+  }
 
-
-function openChat() {
-    document.getElementById("chatBox").style.display = "block";
-
-
-function closeChat() {
-    document.getElementById("chatBox").style.display = "none";
-}
-
-let liveMode = false;
-
-function sendMessage() {
-    let input = document.getElementById("userInput");
-    let msg = input.value.trim();
-    let chat = document.getElementById("chatBody");
-
-    if (msg === "") return;
-
-    chat.innerHTML += `<p class="user">${msg}</p>`;
-
-    let reply = "";
-
-    if (liveMode) {
-        reply = "Agent will respond shortly.";
-    } 
-    else if (msg.toLowerCase().includes("book")) {
-        reply = "Go to Home → Book Now → Choose a slot.";
-    } 
-    else if (msg.toLowerCase().includes("cancel")) {
-        reply = "Go to Booking page → Cancel Existing Booking.";
-    } 
-    else {
-        reply = `
-        I couldn't find that.<br><br>
-        <button onclick="startLive()"> Chat with Help Desk</button>
-        `;
-    }
-
-    setTimeout(() => {
-        chat.innerHTML += `<p class="bot">${reply}</p>`;
-        chat.scrollTop = chat.scrollHeight;
-    }, 500);
-
-    input.value = "";
-}
-
-function startLive() {
-    liveMode = true;
-    let chat = document.getElementById("chatBody");
-
-    chat.innerHTML += "<p class='bot'>You are now connected to support.</p>";
-}
 
 </script>
 
 
-  
-</body>
-    
 </body>
 </html>

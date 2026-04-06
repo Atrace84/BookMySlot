@@ -1,1 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
 
+<style>
+body {
+    font-family: Arial;
+    background: #f4f7fb;
+    margin: 0;
+}
+
+.header {
+    background: #0b3c5d;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.container {
+    padding: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+button {
+    padding: 6px 10px;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.cancel {
+    background: red;
+}
+
+.confirm {
+    background: green;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Admin Dashboard</h1>
+</div>
+
+<div class="container">
+    <h2>Bookings</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Service</th>
+                <th>Time Slot</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="bookingTable"></tbody>
+    </table>
+</div>
+
+<script>
+let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+
+function displayBookings() {
+    let table = document.getElementById("bookingTable");
+    table.innerHTML = "";
+
+    bookings.forEach((b, index) => {
+        table.innerHTML += `
+        <tr>
+            <td>${b.name}</td>
+            <td>${b.phone}</td>
+            <td>${b.service}</td>
+            <td>${b.time}</td>
+            <td>
+                <button class="confirm" onclick="confirmBooking(${index})">Confirm</button>
+                <button class="cancel" onclick="cancelBooking(${index})">Cancel</button>
+            </td>
+        </tr>
+        `;
+    });
+}
+
+function confirmBooking(i) {
+    alert("📧 Email sent: Booking confirmed for " + bookings[i].name);
+}
+
+function cancelBooking(i) {
+    alert("📧 Email sent: Booking cancelled for " + bookings[i].name);
+
+    bookings.splice(i, 1);
+    localStorage.setItem("bookings", JSON.stringify(bookings));
+
+    displayBookings();
+}
+
+displayBookings();
+function bookNow() {
+    let name = document.getElementById("name").value;
+    let phone = document.getElementById("phone").value;
+    let service = document.getElementById("service").value;
+    let time = document.getElementById("time").value;
+
+    let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+
+    bookings.push({ name, phone, service, time });
+
+    localStorage.setItem("bookings", JSON.stringify(bookings));
+
+    alert("Booking successful!");
+}
+</script>
+
+</body>
+</html>

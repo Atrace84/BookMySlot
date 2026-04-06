@@ -1,0 +1,137 @@
+/* Floating Button */
+#chat-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px; /* RIGHT CORNER like your image */
+    background: #0b3c5d;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+
+#chat-toggle img {
+    width: 60px;      /* increase size */
+    height: 50px;
+    object-fit: cover; /* THIS is the zoom effect */
+    border-radius: 50%; /* makes it look clean inside circle */
+}
+
+/* Chat Window */
+#chat-window {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 320px;
+    background: white;
+    border-radius: 12px;
+    display: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Header */
+.chat-header {
+    background: #0b3c5d;
+    color: white;
+    padding: 10px;
+    border-radius: 12px 12px 0 0;
+}
+
+/* Body */
+#chat-body {
+    padding: 10px;
+    height: 220px;
+    overflow-y: auto;
+}
+
+/* Suggestions */
+.suggestions button {
+    margin: 4px;
+    padding: 6px;
+    background: #00a8e8;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Input */
+.chat-input {
+    display: flex;
+    border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 8px;
+    border: none;
+}
+
+.chat-input button {
+    background: #00a8e8;
+    color: white;
+    border: none;
+    padding: 8px;
+}
+nav{
+background:white;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+.navbar {
+    display: flex;             
+    justify-content: space-between; 
+    align-items: center;        
+    padding: 5px 15px;       
+        
+}
+
+.navbar .logo img {
+    width: 150px;              
+    height: auto;
+}
+
+.nav-links {
+    list-style: none;          
+    display: flex;            
+    gap: 20px;                 
+    margin: 0;
+    padding: 15px;
+    
+}
+
+.nav-links li a {
+    color:white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-links li a:hover {
+    color: #ffcc00;          
+}
+
+nav h2{
+color:white;
+margin:0;
+}
+
+.navbar a{
+color:rgb(6, 6, 60);
+text-decoration:none;
+margin-left:20px;
+font-weight:bold;
+font-size: 15px;
+}
+#logo {
+    
+    width: 140px;
+    height: auto;
+}
+
+
+
