@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Reset Password</title>
+  <style>
+  
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #f2f5f9; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      height: 100vh; }
+    .container { 
+      background: #fff; 
+      padding: 30px; 
+      border-radius: 20px; 
+      width: 320px; text-align: center; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    .logo { 
+      width: 70px; margin-bottom: 10px; }
+    h2 { margin-bottom: 20px; 
+      color: #0b3c6f; }
+    .input-box input { 
+      width: 100%; 
+      padding: 12px; border-radius: 10px; 
+      border: 1px solid #ccc; margin-bottom: 15px; 
+      box-sizing: border-box; 
+    }
+    button { 
+      width: 100%; padding: 12px; border: none; 
+      border-radius: 10px; 
+      background: linear-gradient(to right, #0077b6, #00b4d8); color: white; font-size: 16px; cursor: pointer; }
+    button:hover { opacity: 0.9; }
+    #message { margin-top: 15px; 
+      font-size: 14px; font-weight: bold; }
+    .footer-link { margin-top: 20px; 
+      display: block; text-decoration: none; 
+      color: #0077b6; 
+      font-size: 14px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <img src="logo-removebg-preview.png" alt="Logo" class="logo">
+
+  <h2>Admin Reset</h2>
+  <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Enter your registered work email to receive a password reset link.</p>
+
+  <!-- Email Input with Work Email Placeholder -->
+  <div class="input-box">
+    <input type="email" id="email" placeholder="Enter Work Email" required>
+  </div>
+
+  <button id="resetBtn">Send Reset Link</button>
+
+  <p id="message"></p>
+
+  <a href="admin_login.html" class="footer-link">Back to Login</a>
+</div>
+
+<!-- FIREBASE INTEGRATION -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCgxczNpy7nLk4bfTjBKMkcXNfgoEMKvZ8",
+    authDomain: "bookmyslot-b3f29.firebaseapp.com",
+    projectId: "bookmyslot-b3f29",
+    storageBucket: "bookmyslot-b3f29.firebasestorage.app",
+    messagingSenderId: "494612742628",
+    appId: "1:494612742628:web:5bd1bbc642b7449b29c7f1"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const resetBtn = document.getElementById('resetBtn');
+  const messageBox = document.getElementById('message');
+
+  resetBtn.addEventListener('click', async () => {
+    const email = document.getElementById("email").value;
+
+    if (!email) {
+      alert("Please enter your work email.");
+      return;
+    }
+
+    messageBox.innerHTML = "Processing...";
+    messageBox.style.color = "blue";
+
+    try {
+      // Firebase sends a secure link to the email provided
+      await sendPasswordResetEmail(auth, email);
+      
+      messageBox.style.color = "green";
+      messageBox.innerHTML = "Link sent! Check your work email (and spam folder).";
+      
+      // Clear input
+      document.getElementById("email").value = "";
+
+    } catch (error) {
+      console.error("Firebase Error:", error.code);
+      messageBox.style.color = "red";
+      
+      if (error.code === 'auth/user-not-found') {
+        messageBox.innerHTML = "No admin account found with this email.";
+      } else {
+        messageBox.innerHTML = "Error: " + error.message;
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
