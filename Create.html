@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+    background-color: #f4f7f9;
+    padding: 40px;
+    font-family: Arial, sans-serif;
+}
+
+.application-container {
+    max-width: 900px; /* Makes the form "Big" */
+    margin: 0 auto;
+    background: white;
+    padding: 50px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.form-header { text-align: center; border-bottom: 2px solid #0056b3; margin-bottom: 30px; padding-bottom: 20px; }
+.app-logo { width: 150px; margin-bottom: 10px; }
+
+h3 { color: #0056b3; border-left: 5px solid #ffa500; padding-left: 10px; margin-bottom: 20px; }
+
+.input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns */
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block; 
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Important for width */
+}
+
+.submit-btn {
+    background: #0056b3;
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.error-msg { color: #d9534f; font-size: 13px; margin-top: 5px; }
+
+    
+
+    </style>
+</head>
+<body>
+    <div class="application-container">
+    <div class="form-header">
+        <img src="logo.jpeg" alt="Logo" class="app-logo">
+        <h1>Create Account</h1>
+        <p class="instruction-text">Please ensure all details match your National ID or Passport. All fields marked with an asterisk (*) are mandatory.</p>
+    </div>
+
+    <form id="studentRegistrationForm" class="grid-form">
+        <div class="form-section">
+            <h3>Personal Details</h3>
+            <div class="input-row">
+                <div class="form-group">
+                    <label for="firstName">Full Names (as per ID) *</label>
+                    <input type="text" id="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="surname">Surname *</label>
+                    <input type="text" id="surname" required>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="form-group">
+                    <label for="studentNum">Student Number</label>
+                    <input type="text" id="studentNum" placeholder="e.g. 21405060">
+                </div>
+                <div class="form-group">
+                    <label for="dob">Date of Birth *</label>
+                    <input type="date" id="dob" required>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-section">
+            <h3>Contact Details</h3>
+            <div class="input-row">
+                <div class="form-group">
+                    <label for="regEmail">Official Email Address *</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Mobile Phone Number *</label>
+                    <input type="tel" id="phone" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Security & Password</h3>
+            <p class="field-note">Requirement: Min 15 chars, must include numbers/special characters, no repeating characters.</p>
+            <div class="form-group full-width">
+                <label for="regPassword">Create Portal Password *</label>
+                <input type="password" id="regPassword" required>
+            </div>
+            <p id="passwordError" class="error-msg"></p>
+        </div>
+
+        <button type="submit" class="submit-btn">Register</button>
+    </form>
+</div>
+        <div id="message-box"></div>
+
+<script type="module">
+  // 1. IMPORT FIREBASE APP
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  
+  // 2. IMPORT FIREBASE AUTH (You were missing this)
+  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+  
+  // 3. IMPORT FIREBASE FIRESTORE (You were missing this)
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCgxczNpy7nLk4bfTjBKMkcXNfgoEMKvZ8",
+    authDomain: "bookmyslot-b3f29.firebaseapp.com",
+    projectId: "bookmyslot-b3f29",
+    storageBucket: "bookmyslot-b3f29.firebasestorage.app",
+    messagingSenderId: "494612742628",
+    appId: "1:494612742628:web:5bd1bbc642b7449b29c7f1"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const form = document.getElementById('studentRegistrationForm');
+  const messageBox = document.getElementById('message-box');
+
+  form.addEventListener('submit', async function(e) {
+      e.preventDefault(); // This now works because the code didn't crash above!
+      
+      // Get values
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPassword').value;
+      const firstName = document.getElementById('firstName').value;
+      const surname = document.getElementById('surname').value;
+      const studentNum = document.getElementById('studentNum').value;
+      const dob = document.getElementById('dob').value;
+      const phone = document.getElementById('phone').value;
+
+      messageBox.innerHTML = "Creating account...";
+      messageBox.className = "";
+
+      try {
+          // 1. Create User in Firebase Auth
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          const cleanEmail = document.getElementById('regEmail').value.trim().toLowerCase();
+
+          // 2. Save additional details in Firestore using the User ID
+          await setDoc(doc(db, "students", user.uid), {
+              firstName: firstName,
+              surname: surname,
+              studentNum: studentNum,
+              dob: dob,
+              email: cleanEmail,
+              phone: phone,
+              password: password, 
+              createdAt: new Date().toISOString()
+          });
+
+          // Success
+          messageBox.innerHTML = "Registration Successful!";
+          messageBox.className = "success";
+          form.reset();
+          
+          alert("Account created successfully!");
+          window.location.href = "Welcome.html";
+
+      } catch (error) {
+          console.error("Firebase Error:", error);
+          messageBox.className = "error";
+          
+          // Handle common Firebase errors
+          if (error.code === 'auth/email-already-in-use') {
+              messageBox.innerHTML = "This email is already registered.";
+          } else if (error.code === 'auth/weak-password') {
+              messageBox.innerHTML = "Password is too weak. (Must be at least 6 characters)";
+          } else {
+              messageBox.innerHTML = "Error: " + error.message;
+          }
+      }
+  });
+</script>
+</body>
+</html>
