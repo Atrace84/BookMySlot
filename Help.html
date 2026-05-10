@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookMySlot</title>
+     <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+     <style>
+  body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+  }
+  .container {
+      max-width: 800px;
+      margin: 50px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  h1 {
+      text-align: center;
+      margin-bottom: 20px;
+  }
+  .faq {
+      margin-bottom: 10px;
+      cursor: pointer;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+  }
+  .answer {
+      display: none;
+      padding: 10px;
+      background: #f9f9f9;
+      border-left: 3px solid #007BFF;
+      margin-bottom: 10px;
+  }
+  .search-bar {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+  }
+  .support-options {
+      margin-top: 20px;
+      text-align: center;
+  }
+  .support-options button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+  }
+  .support-options button:hover {
+      background-color: #0056b3;
+  }
+  .navbar {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;            
+  padding: 20px;
+}
+.left {
+  display: flex;
+  align-items: center;
+  gap: 5px; 
+}
+
+.text h2, .text span {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.text h2{
+  font-size: 28px;
+  color: black;
+}
+
+.text span {
+  font-size: 20px;
+}
+
+  </style>
+    
+</head>
+<body>
+    <nav class="navbar">
+        <div class="left">
+        
+        <div class= "logo" >
+             <img src="logo-removebg-preview.png" alt="Logo" id="logo">
+        </div>
+        <div class="text">
+            <h2>BookMySlot</h2>
+            <span>Made Easy</span>
+        </div>
+        </div>
+        <div class="nav-links">
+        <a href="Home.html">Home</a>
+        <a href="Services.html">Services</a>
+        <a href="AboutUs.html">About Us</a>
+        <a href="Contact.html">Contact</a>
+        <a href="Help.html">Help</a>
+        </div>
+
+    </nav>
+
+     <div id="chat-toggle" onclick="toggleChat()">
+        <img src="logo.jpeg" alt="chat logo">
+        <span>Chat with me</span>
+    </div>
+    
+    <div id="chat-window">
+        <div class="chat-header">
+        Help Support
+    </div>
+
+    <div id="chat-body">
+        <p class="bot">Hi, How can I help you today?</p>
+        <div class="suggestions">
+            <button onclick="quickReply('book')">How do I book?</button>
+            <button onclick="quickReply('login')">How do I log in?</button>
+            <button onclick="quickReply('cancel')">Cancel booking</button>
+            <button onclick="quickReply('navigate')">How to navigate?</button>
+        </div>
+        </div>
+
+    <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Type your question...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    
+</div>
+
+
+
+<div class="container">
+<h1>Welcome to the Help Center</h1>
+
+<input type="text" id="searchInput" class="search-bar" placeholder="Search..." oninput="searchFAQ()">
+
+<div class="faq" onclick="toggleAnswer(this)">How do I book a service?</div>
+<div class="answer">Go to Home → Book Now → Select service → Choose time.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">How do I cancel my booking?</div>
+<div class="answer">Go to Booking page and click 'Cancel Existing Booking'.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">How do I know my booking was cancelled?</div>
+<div class="answer">A confirmation email will be sent to you.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">What happens if I am late for my appointment?</div>
+<div class="answer">Your appointment is automatically cancelled.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">What if I cancelled my booking by mistake?</div>
+<div class="answer">You will have to book for another available slot because when you cancel our system allows for everyone to book that reopened slot.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">How long will my meeting last?</div>
+<div class="answer">Each session lasts for only 10 minutes.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">How many students do they take per day?</div>
+<div class="answer">Only 48 students are assisted per day.</div>
+
+<div class="faq" onclick="toggleAnswer(this)">When do they operate and for how many hours?</div>
+<div class="answer">Mondays to Fridays, 08:00–12:00 and 13:00–17:00.</div>
+
+ <div id="searchResponse" class="answer" style="display:none;"></div>
+
+  <!-- Support options -->
+  <div class="support-options" id="supportOptions" style="display:none;">
+      <p>Your question was not found. </p>
+      <p> You can:</p>
+      <button onclick="liveChat()">Live Chat</button>
+      <button onclick="contactSupport()"> Contact Support</button>
+  </div>
+</div>
+
+<script>
+ function toggleAnswer(element) {
+      let answer = element.nextElementSibling;
+      // Hide all answers first
+      document.querySelectorAll('.answer').forEach(a => {
+          if(a !== answer) a.style.display = 'none';
+      });
+      // Toggle clicked answer
+      answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+      // Hide support options
+      document.getElementById('supportOptions').style.display = 'none';
+  }
+
+  // Search function
+  function searchFAQ() {
+      let input = document.getElementById('searchInput').value.toLowerCase();
+      let faqs = document.querySelectorAll('.faq');
+      let found = false;
+
+      faqs.forEach((faq, index) => {
+          let question = faq.textContent.toLowerCase();
+          if(question.includes(input) && input !== "") {
+              // Show the matched answer
+              faq.nextElementSibling.style.display = 'block';
+              found = true;
+          } else {
+              faq.nextElementSibling.style.display = 'none';
+          }
+      });
+
+      if(!found && input !== "") {
+          // Show support options if no FAQ matches
+          document.getElementById('supportOptions').style.display = 'block';
+      } else {
+          document.getElementById('supportOptions').style.display = 'none';
+      }
+  }
+
+  // Support option functions
+  function liveChat() {
+      alert("Starting live chat... ");
+  }
+
+  function contactSupport() {
+      alert("Contact us at support@bookmyslot.com or call 012 345 6789");
+  }
+
+
+</script>
+
+
+</body>
+</html>
