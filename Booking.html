@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookMySlot - Book Your Appointment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fb 0%, #e8ecf4 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #0b3c5d;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        /* CARD */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0b3c5d;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #00a8e8;
+            border-radius: 2px;
+        }
+
+        /* EMAIL INPUT */
+        .email-section {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #475569;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00a8e8;
+            box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.1);
+        }
+
+
+        .existing-booking-warning {
+            display: none;
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .existing-booking-warning.active {
+            display: block;
+        }
+
+        .existing-booking-warning .warning-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .existing-booking-warning .warning-icon {
+            font-size: 1.5rem;
+        }
+
+        .existing-booking-warning .existing-details {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .existing-booking-warning .existing-details .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .existing-booking-warning .existing-details .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .existing-booking-warning .existing-details .label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .existing-booking-warning .existing-details .value {
+            font-weight: 600;
+            color: #0b3c5d;
+            font-size: 0.9rem;
+        }
+
+        .existing-booking-warning .warning-message {
+            color: #92400e;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .existing-booking-warning .cancel-existing-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .existing-booking-warning .cancel-existing-btn:hover {
+            background: #b91c1c;
+        }
+
+        /* DATE PICKER */
+        .date-picker-wrapper {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* SERVICES */
+        .services {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .service-btn {
+            padding: 14px 28px;
+            background: #f1f5f9;
+            color: #475569;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .service-btn:hover:not(:disabled) {
+            background: #e2e8f0;
+        }
+
+        .service-btn.active {
+            background: #00a8e8;
+            color: white;
+            border-color: #0090c8;
+        }
+
+        .service-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* SELECTED INFO */
+        .selection-info {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .selection-info .icon {
+            width: 40px;
+            height: 40px;
+            background: #00a8e8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .selection-info .text {
+            color: #0369a1;
+            font-weight: 500;
+        }
+
+        /* SLOTS GRID */
+        .slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .slot {
+            padding: 14px 8px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            color: #475569;
+            transition: all 0.2s;
+        }
+
+        .slot:hover:not(.booked):not(.lunch):not(.disabled):not(.my-booking) {
+            border-color: #00a8e8;
+            background: #f0f9ff;
+        }
+
+        .slot.selected {
+            background: #00a8e8;
+            border-color: #0090c8;
+            color: white;
+        }
+
+        .slot.booked {
+            background: #94a3b8;
+            border-color: #94a3b8;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .slot.my-booking {
+            background: #22c55e;
+            border-color: #16a34a;
+            color: white;
+            cursor: pointer;
+        }
+
+        .slot.lunch {
+            background: #fecaca;
+            border-color: #fca5a5;
+            color: #dc2626;
+            cursor: not-allowed;
+        }
+
+        .slot.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ACTIONS */
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #00a8e8;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #0090c8;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        /* CONFIRMATION MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal .success-icon {
+            width: 80px;
+            height: 10px;
+            background: #dcfce7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2.5rem;
+            color: #22c55e;
+        }
+
+        .modal h2 {
+            color: #0b3c5d;
+            margin-bottom: 16px;
+        }
+
+        .modal .booking-details {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .modal .booking-details .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal .booking-details .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .modal .booking-details .label {
+            color: #64748b;
+        }
+
+        .modal .booking-details .value {
+            font-weight: 600;
+            color: #0b3c5d;
+        }
+
+        .modal .reminder {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .modal .reminder-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal .reminder ul {
+            color: #a16207;
+            margin-left: 20px;
+            font-size: 0.9rem;
+        }
+
+        .modal .reminder li {
+            margin: 4px 0;
+        }
+
+        .modal .email-sent {
+            background: #dbeafe;
+            border-radius: 8px;
+            padding: 12px;
+            color: #1e40af;
+            font-size: 0.9rem;
+            margin-top: 16px;
+        }
+
+        .modal .btn {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+
+        .bookings-list {
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .booking-item {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .booking-item .info {
+            flex: 1;
+        }
+
+        .booking-item .service {
+            font-weight: 600;
+            color: #0b3c5d;
+            margin-bottom: 4px;
+        }
+
+        .booking-item .datetime {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .booking-item .cancel-small {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .booking-item .cancel-small:hover {
+            background: #fecaca;
+        }
+
+        .no-bookings {
+            text-align: center;
+            color: #64748b;
+            padding: 40px;
+        }
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .legend-item .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        .legend-item .dot.available {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+        }
+
+        .legend-item .dot.selected {
+            background: #00a8e8;
+        }
+
+        .legend-item .dot.booked {
+            background: #94a3b8;
+        }
+
+        .legend-item .dot.my-booking {
+            background: #22c55e;
+        }
+
+        .legend-item .dot.lunch {
+            background: #fecaca;
+        }
+
+        /* ALERT MODAL */
+        .alert-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .alert-modal .alert-icon {
+            width: 60px;
+            height: 60px;
+            background: #fee2e2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: #dc2626;
+        }
+
+        .alert-modal h3 {
+            color: #0b3c5d;
+            margin-bottom: 12px;
+        }
+
+        .alert-modal p {
+            color: #64748b;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .alert-modal .btn {
+            width: 100%;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 640px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .slots {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Book Your Slot</h1>
+        <p>Schedule your appointment with ease</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Your Information</div>
+        <div class="email-section">
+            <div class="input-group">
+                <label for="emailInput">Email Address (for confirmation)</label>
+                <input type="email" id="emailInput" placeholder="student@university.edu" oninput="checkExistingBooking()">
+            </div>
+        </div>
+
+        <div class="existing-booking-warning" id="existingBookingWarning">
+            <div class="warning-header">
+                <span class="warning-icon">&#9888;</span>
+                <span>You Already Have a Booking</span>
+            </div>
+            <div class="existing-details">
+                <div class="detail-row">
+                    <span class="label">Service</span>
+                    <span class="value" id="existingService">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Date</span>
+                    <span class="value" id="existingDate">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Time</span>
+                    <span class="value" id="existingTime">-</span>
+                </div>
+            </div>
+            <p class="warning-message">You can only have one active booking at a time. Please cancel your existing booking before making a new one.</p>
+            <button class="cancel-existing-btn" onclick="cancelExistingBooking()">Cancel Existing Booking</button>
+        </div>
+    </div>
+
+    <div class="card" id="dateServiceCard">
+        <div class="card-title">Select Date &amp; Service</div>
+        <div class="date-picker-wrapper">
+            <div class="input-group">
+                <label for="datePicker">Appointment Date</label>
+                <input type="date" id="datePicker">
+            </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #475569; margin-bottom: 12px;">Service Type</label>
+            <div class="services">
+                <button class="service-btn" onclick="selectService('Financial Aid')">Financial Aid</button>
+                <button class="service-btn" onclick="selectService('Accommodation')">Accommodation</button>
+                <button class="service-btn" onclick="selectService('Support')">Support</button>
+            </div>
+        </div>
+
+        <div class="selection-info" id="selectionInfo" style="display: none;">
+            <div class="icon">&#10003;</div>
+            <div class="text" id="selectionText">No service selected</div>
+        </div>
+    </div>
+
+    <div class="card" id="slotsCard">
+        <div class="card-title">Available Time Slots</div>
+        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 10px;">Select a date and service above to view available slots</p>
+        <div class="slots" id="slots-container"></div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="dot available"></div>
+                <span>Available</span>
+            </div>
+            <div class="legend-item">
+                <div class="dot selected"></div>
+                <span>Selected</span>
+            </div>
+            <div class="legend-item">
+                <div class="dot booked"></div>
+                <span>Booked</span>
+            </div>
+            <div class="legend-item">
+                <div class="dot my-booking"></div>
+                <span>Your Booking</span>
+            </div>
+            <div class="legend-item">
+                <div class="dot lunch"></div>
+                <span>Lunch Break</span>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="actions">
+            <button class="btn btn-primary" id="confirmBtn" onclick="confirmBooking()">Confirm Booking</button>
+            <button class="btn btn-secondary" onclick="viewMyBookings()">View My Bookings</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="confirmationModal">
+    <div class="modal">
+        <div class="success-icon">&#10003;</div>
+        <h2>Booking Confirmed!</h2>
+        <p style="color: #64748b;">Your appointment has been successfully scheduled.</p>
+        
+        <div class="booking-details">
+            <div class="detail-row">
+                <span class="label">Service</span>
+                <span class="value" id="modalService">-</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Date</span>
+                <span class="value" id="modalDate">-</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Time</span>
+                <span class="value" id="modalTime">-</span>
+            </div>
+        </div>
+
+        <div class="reminder">
+            <div class="reminder-title">
+                <span>&#9888;</span> Important Reminder
+            </div>
+            <ul>
+                <li>Please bring your <strong>Student ID Card</strong></li>
+                <li>Bring any <strong>relevant documents</strong> for your service</li>
+                <li>Arrive <strong>5 minutes early</strong> for your appointment</li>
+                <li>If you cannot attend, please cancel in advance</li>
+            </ul>
+        </div>
+
+        <div class="email-sent" id="emailConfirmation">
+            &#9993; A confirmation email has been sent to <strong id="confirmEmail">-</strong>
+        </div>
+
+        <button class="btn btn-primary" onclick="closeModal('confirmationModal')">Done</button>
+    </div>
+</div>
+
+<!-- My Bookings Modal -->
+<div class="modal-overlay" id="bookingsModal">
+    <div class="modal">
+        <h2 style="margin-bottom: 20px;">My Bookings</h2>
+        <div class="bookings-list" id="bookingsList"></div>
+        <button class="btn btn-secondary" onclick="closeModal('bookingsModal')">Close</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="alertModal">
+    <div class="alert-modal">
+        <div class="alert-icon">&#9888;</div>
+        <h3 id="alertTitle">Cannot Book</h3>
+        <p id="alertMessage">You already have an active booking. Please cancel your existing booking before making a new one.</p>
+        <button class="btn btn-primary" onclick="closeModal('alertModal')">Understood</button>
+    </div>
+</div>
+
+<!-- FIREBASE INTEGRATION -->
+<!-- FIREBASE INTEGRATION -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, getDocs, collection, query, where, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCgxczNpy7nLk4bfTjBKMkcXNfgoEMKvZ8",
+        authDomain: "bookmyslot-b3f29.firebaseapp.com",
+        projectId: "bookmyslot-b3f29",
+        storageBucket: "bookmyslot-b3f29.firebasestorage.app",
+        messagingSenderId: "494612742628",
+        appId: "1:494612742628:web:5bd1bbc642b7449b29c7f1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let selectedService = "";
+    let selectedSlot = null;
+    let userHasBooking = false;
+    let userBookingKey = null;
+    let loggedInStudentNum = null;
+
+    // 1. AUTH STATE - Get Student Info
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        // ALWAYS use lowercase for comparison
+        const userEmail = user.email.toLowerCase().trim(); 
+        document.getElementById("emailInput").value = userEmail;
+        
+        const q = query(collection(db, "students"), where("email", "==", userEmail));
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+            const data = querySnapshot.docs[0].data();
+            loggedInStudentNum = data.studentNum; // This will now find the ID
+        } else {
+            loggedInStudentNum = "ID_NOT_FOUND";
+        }
+    }
+});
+
+    // 2. CHECK FOR EXISTING BOOKING
+    window.checkExistingBooking = async function() {
+        const email = document.getElementById("emailInput").value.trim().toLowerCase();
+        const warningDiv = document.getElementById("existingBookingWarning");
+        
+        if (!email) {
+            warningDiv.classList.remove("active");
+            return;
+        }
+
+        const q = query(collection(db, "bookings"), where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const bookingDoc = querySnapshot.docs[0];
+            const data = bookingDoc.data();
+            userHasBooking = true;
+            userBookingKey = bookingDoc.id;
+
+            document.getElementById("existingService").innerText = data.service;
+            document.getElementById("existingDate").innerText = data.date;
+            document.getElementById("existingTime").innerText = data.time;
+            warningDiv.classList.add("active");
+        } else {
+            userHasBooking = false;
+            userBookingKey = null;
+            warningDiv.classList.remove("active");
+        }
+        updateUIState();
+        window.generateSlots();
+    };
+
+    // 3. GENERATE TIME SLOTS
+    window.generateSlots = async function() {
+        const container = document.getElementById("slots-container");
+        const selectedDate = document.getElementById("datePicker").value;
+        const email = document.getElementById("emailInput").value.trim().toLowerCase();
+
+        if (!selectedDate) {
+            container.innerHTML = '<p style="color: #94a3b8; grid-column: 1/-1; text-align: center; padding: 40px;">Please select a date to view available slots</p>';
+            return;
+        }
+
+        container.innerHTML = "Loading slots...";
+
+        // Fetch all bookings for this day to see what is taken
+        const activeBookingsOnDate = {};
+        const q = query(collection(db, "bookings"), where("date", "==", selectedDate));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            activeBookingsOnDate[doc.data().time] = doc.data().email;
+        });
+
+        container.innerHTML = "";
+
+        // Loop from 8 AM to 4:50 PM
+        for (let hour = 8; hour < 17; hour++) {
+            for (let min = 0; min < 60; min += 10) {
+                let time = `${hour.toString().padStart(2,'0')}:${min.toString().padStart(2,'0')}`;
+                
+                let div = document.createElement("div");
+                div.classList.add("slot");
+                div.innerText = time;
+
+                if (hour === 12) {
+                    div.classList.add("lunch");
+                    div.innerText = time + " (Lunch)";
+                } 
+                else if (activeBookingsOnDate[time]) {
+                    if (activeBookingsOnDate[time] === email) {
+                        div.classList.add("my-booking");
+                        div.innerText = time + " (Yours)";
+                    } else {
+                        div.classList.add("booked");
+                    }
+                } 
+                else if (userHasBooking) {
+                    div.classList.add("disabled");
+                } 
+                else {
+                    div.onclick = () => window.selectSlot(div);
+                }
+                container.appendChild(div);
+            }
+        }
+    };
+
+    // 4. CONFIRM BOOKING
+    window.confirmBooking = async function() {
+        let date = document.getElementById("datePicker").value;
+        let email = document.getElementById("emailInput").value.trim().toLowerCase();
+
+        if (!email || !date || !selectedService || !selectedSlot) {
+            alert("Please select date, service, and a time slot.");
+            return;
+        }
+
+        let time = selectedSlot.innerText;
+        let key = date + "_" + time;
+
+        try {
+            const docRef = doc(db, "bookings", key);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                alert("This slot was just taken by someone else!");
+                window.generateSlots();
+                return;
+            }
+
+            await setDoc(docRef, {
+                service: selectedService,
+                email: email,
+                studentNum: loggedInStudentNum, 
+                date: date,
+                time: time,
+                status: "Pending",
+                timestamp: serverTimestamp()
+            });
+
+            // Update Modal UI
+            document.getElementById('modalService').innerText = selectedService;
+            document.getElementById('modalDate').innerText = date;
+            document.getElementById('modalTime').innerText = time;
+            document.getElementById('confirmEmail').innerText = email;
+            document.getElementById('confirmationModal').classList.add('active');
+
+            window.checkExistingBooking();
+        } catch (e) {
+            console.error(e);
+            alert("Booking failed. Check your connection.");
+        }
+    };
+
+    // 5. CANCEL BOOKING
+    window.cancelExistingBooking = async function() {
+        if (!userBookingKey) return;
+        if (confirm("Are you sure you want to cancel this appointment?")) {
+            await deleteDoc(doc(db, "bookings", userBookingKey));
+            alert("Cancelled successfully.");
+            window.checkExistingBooking();
+        }
+    };
+
+    // HELPER FUNCTIONS
+    function updateUIState() {
+        const confirmBtn = document.getElementById("confirmBtn");
+        const serviceBtns = document.querySelectorAll(".service-btn");
+        confirmBtn.disabled = userHasBooking;
+        serviceBtns.forEach(btn => btn.disabled = userHasBooking);
+    }
+
+    window.selectService = (service) => {
+        selectedService = service;
+        document.querySelectorAll('.service-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.innerText === service);
+        });
+        document.getElementById('selectionInfo').style.display = 'flex';
+        document.getElementById('selectionText').innerText = service + " selected";
+        window.generateSlots();
+    };
+
+    window.selectSlot = (el) => {
+        if (selectedSlot) selectedSlot.classList.remove("selected");
+        el.classList.add("selected");
+        selectedSlot = el;
+    };
+
+    window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+
+    // Add listener for date picker change
+    document.getElementById("datePicker").addEventListener("change", window.generateSlots);
+
+    // Set min date
+    document.getElementById("datePicker").setAttribute("min", new Date().toISOString().split('T')[0]);
+
+</script>
+</body>
