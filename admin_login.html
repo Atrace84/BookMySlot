@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin SignIn</title>
+    <style>
+        body { 
+            background-color: #f0f4f8; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; }
+        .login-card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 30px; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); 
+            width: 320px; 
+            text-align: center; }
+        h2 { color: #002b5c; 
+            margin-bottom: 30px; }
+        .input-group { 
+            background: #fff; 
+            border: 1px solid #e1e8ef; border-radius: 15px; margin-bottom: 15px; 
+            display: flex; align-items: center; 
+            padding: 12px 15px; }
+        .input-group input { 
+            border: none; 
+            outline: none; width: 100%; font-size: 14px; 
+            color: #333; }
+        .login-btn { 
+            background-color: #0081c9; 
+            color: white; border: none; width: 100%; padding: 14px; border-radius: 15px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 129, 201, 0.3); margin: 20px 0; }
+        .footer-links a { 
+            text-decoration: none; 
+            color: #0081c9; 
+            font-size: 14px; 
+            display: block; margin: 10px 0; }
+        hr { border: 0; border-top: 1px solid #eee; 
+            width: 50%; margin: 15px auto; }
+        .logo img { 
+            width: 150px; 
+            height: auto; 
+            display: block; 
+            margin: 0 auto; 
+            margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo">
+                <img src="logo-removebg-preview.png" alt="chat logo">
+            </div>
+
+            <h2>Welcome Admin</h2>
+
+            <form id="adminLoginForm">
+                <div class="input-group">
+                    <!-- Added Staff ID field -->
+                    <input type="text" id="staffId" placeholder="Staff ID" required>
+                </div>
+
+                <div class="input-group">
+                    <!-- Placeholder changed to Work Email -->
+                    <input type="email" id="workEmail" placeholder="Work Email" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="adminPassword" placeholder="Password" required>
+                </div>
+
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+
+            <div class="footer-links">
+                <a href="admin_forgot.html" class="forgot-pass">Forgot Password?</a>
+                <hr>
+                <a href="admin_create.html" class="create-acc">Create Account</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCgxczNpy7nLk4bfTjBKMkcXNfgoEMKvZ8",
+            authDomain: "bookmyslot-b3f29.firebaseapp.com",
+            projectId: "bookmyslot-b3f29",
+            storageBucket: "bookmyslot-b3f29.firebasestorage.app",
+            messagingSenderId: "494612742628",
+            appId: "1:494612742628:web:5bd1bbc642b7449b29c7f1"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const loginForm = document.getElementById('adminLoginForm');
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const staffIdInput = document.getElementById('staffId').value;
+            const emailInput = document.getElementById('workEmail').value;
+            const passwordInput = document.getElementById('adminPassword').value;
+
+            try {
+                // 1. Sign in with Email and Password
+                const userCredential = await signInWithEmailAndPassword(auth, emailInput, passwordInput);
+                const user = userCredential.user;
+
+                // 2. Verify Staff ID from Firestore
+                // This assumes when you create an admin, you save their data in an "admins" collection
+                const adminDoc = await getDoc(doc(db, "admins", user.uid));
+
+                if (adminDoc.exists()) {
+                    const adminData = adminDoc.data();
+
+                    // Check if the entered Staff ID matches the one in the database
+                    if (adminData.staffId === staffIdInput) {
+                        alert("Admin Login Successful!");
+                        window.location.href = "AdminDashboard.html"; // Redirect to Admin Dashboard
+                    } else {
+                        alert("Access Denied: Staff ID does not match this account.");
+                    }
+                } else {
+                    alert("Access Denied: You are not registered as an administrator.");
+                }
+
+            } catch (error) {
+                console.error("Login Error:", error);
+                if (error.code === 'auth/invalid-credential') {
+                    alert("Invalid Work Email or Password.");
+                } else {
+                    alert("Login failed: " + error.message);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
