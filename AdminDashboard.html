@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+
+<style>
+    body { font-family: Arial; background: #f4f7fb; margin: 0; }
+    .header { background: #0b3c5d; color: white; padding: 15px; text-align: center; }
+    .container { padding: 20px; }
+    table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: center; }
+    th { background: #f8fafc; color: #64748b; text-transform: uppercase; font-size: 12px; }
+
+    /* STATUS BADGES */
+    .badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    .status-pending { 
+        background: #fef3c7; 
+        color: #92400e; 
+    }    
+    .status-confirmed { 
+        background: #dcfce7; 
+        color: #166534; 
+    } 
+
+    button { 
+        padding: 8px 12px; 
+        border: none; 
+        color: white; 
+        cursor: pointer; 
+        border-radius: 4px; 
+        font-weight: bold; 
+        margin: 2px; 
+    }
+    .confirm { 
+        background: #22c55e; 
+    }
+    .confirm:hover { 
+        background: #16a34a; 
+    }
+    .cancel { 
+        background: #ef4444; 
+    }
+    .cancel:hover { 
+        background: #dc2626; 
+    }
+    button:disabled { 
+        background: #ccc; 
+        cursor: not-allowed; }
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Admin Dashboard</h1>
+</div>
+
+<div class="container">
+    <h2>Student Bookings</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Student Number</th>
+                <th>Name</th>
+                <th>Service</th>
+                <th>Date & Time</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="bookingTable"></tbody>
+    </table>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, doc, deleteDoc, updateDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCgxczNpy7nLk4bfTjBKMkcXNfgoEMKvZ8",
+        authDomain: "bookmyslot-b3f29.firebaseapp.com",
+        projectId: "bookmyslot-b3f29",
+        storageBucket: "bookmyslot-b3f29.firebasestorage.app",
+        messagingSenderId: "494612742628",
+        appId: "1:494612742628:web:5bd1bbc642b7449b29c7f1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const bookingTable = document.getElementById("bookingTable");
+
+    function loadBookings() {
+        onSnapshot(collection(db, "bookings"), async (snapshot) => {
+            bookingTable.innerHTML = ""; 
+
+            for (const bookingDoc of snapshot.docs) {
+                const booking = bookingDoc.data();
+                const bookingId = bookingDoc.id;
+                const status = booking.status || "Pending";
+                
+                // 1. Prepare variables with fallbacks
+                let studentNumDisplay = booking.studentNum || "N/A";
+                let studentNameDisplay = "Not Registered";
+                
+                // 2. Clean the email from the booking
+                const bookingEmail = booking.email ? booking.email.toLowerCase().trim() : "";
+
+                if (bookingEmail !== "") {
+                    // 3. Search for the student profile using the cleaned email
+                    const studentQuery = query(
+                        collection(db, "students"), 
+                        where("email", "==", bookingEmail)
+                    );
+                    
+                    const studentSnapshot = await getDocs(studentQuery);
+
+                    if (!studentSnapshot.empty) {
+                        const data = studentSnapshot.docs[0].data();
+                        studentNameDisplay = `${data.firstName} ${data.surname}`;
+                        
+                        // 4. If the booking had "N/A" for studentNum, 
+                        // we fix it here by pulling the real ID from their profile
+                        if (studentNumDisplay === "N/A" || studentNumDisplay === "") {
+                            studentNumDisplay = data.studentNum;
+                        }
+                    }
+                }
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td style="font-weight:bold; color:#0b3c5d;">${studentNumDisplay}</td> 
+                    <td>${studentNameDisplay}</td>
+                    <td>${booking.service}</td>
+                    <td>${booking.date} at ${booking.time}</td>
+                    <td><span class="badge status-${status.toLowerCase()}">${status}</span></td>
+                    <td>
+                        <button class="confirm" 
+                            ${status === 'Confirmed' ? 'disabled' : ''} 
+                            onclick="updateStatus('${bookingId}', 'Confirmed')">
+                            ${status === 'Confirmed' ? 'Confirmed' : 'Confirm'}
+                        </button>
+                        <button class="cancel" onclick="deleteBooking('${bookingId}', '${studentNameDisplay}')">Cancel</button>
+                    </td>
+                `;
+                bookingTable.appendChild(row);
+            }
+        });
+    }
+
+    // UPDATE STATUS FUNCTION
+    window.updateStatus = async (id, newStatus) => {
+        try {
+            const bookingRef = doc(db, "bookings", id);
+            await updateDoc(bookingRef, {
+                status: newStatus
+            });
+            alert("Booking marked as " + newStatus);
+        } catch (error) {
+            alert("Error updating status: " + error.message);
+        }
+    };
+
+    // DELETE/CANCEL FUNCTION
+    window.deleteBooking = async (id, name) => {
+        if (confirm(`Delete booking for ${name}?`)) {
+            try {
+                await deleteDoc(doc(db, "bookings", id));
+            } catch (error) {
+                alert("Error deleting: " + error.message);
+            }
+        }
+    };
+
+    loadBookings();
+</script>
+</body>
+</html>
