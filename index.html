@@ -676,64 +676,147 @@
             opacity: 1;
             transform: translateY(0);
         }
-        @media (max-width: 1024px) {
-            .hero-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-            .hero-text h1 {
-                font-size: 2.8rem;
-            }
-            .hero-buttons {
-                justify-content: center;
-            }
-            .hero-image {
-                max-width: 600px;
-                margin: 0 auto;
-            }
-            .about-cards,
-            .services-cards,
-            .contact-container {
-                grid-template-columns: 1fr;
-                max-width: 600px;
-            }
-        }
         @media (max-width: 768px) {
-            .navbar {
-                padding: 15px 25px;
-            }
-            .navbar.scrolled {
-                padding: 10px 25px;
-            }
-            .hero {
-                padding: 100px 25px 60px;
-            }
-            .hero-text h1 {
-                font-size: 2.2rem;
-            }
-            .hero-buttons {
-                flex-direction: column;
-            }
-            .btn-primary,
-            .btn-secondary {
-                width: 100%;
-                text-align: center;
-            }
-            .about,
-            .services,
-            .contact {
-                padding: 80px 25px;
-            }
-            .chat-window {
-                right: 15px;
-                left: 15px;
-                width: auto;
-            }
-            .btn-signin {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-        }
+
+    html,
+    body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    .navbar {
+        padding: 12px 18px;
+        width: 100%;
+    }
+
+    .navbar.scrolled {
+        padding: 10px 18px;
+    }
+
+    .nav-brand {
+        gap: 10px;
+        max-width: 70%;
+    }
+
+    .nav-brand img {
+        height: 55px;
+    }
+
+    .brand-text h1 {
+        font-size: 1.2rem;
+    }
+
+    .brand-text span {
+        font-size: 0.65rem;
+        letter-spacing: 2px;
+    }
+
+    .nav-right {
+        gap: 10px;
+    }
+
+    .btn-signin {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    .hamburger {
+        padding: 5px;
+    }
+
+    .hamburger span {
+        width: 24px;
+    }
+
+    .mobile-menu {
+        width: 85%;
+        max-width: 320px;
+        right: -100%;
+        padding: 90px 25px 30px;
+        overflow-y: auto;
+    }
+
+    .mobile-menu.active {
+        right: 0;
+    }
+
+    .mobile-menu a {
+        font-size: 1rem;
+        padding: 16px 0;
+        word-wrap: break-word;
+    }
+
+    .hero {
+        padding: 110px 20px 60px;
+    }
+
+    .hero-content {
+        gap: 35px;
+    }
+
+    .hero-text h1 {
+        font-size: 2rem;
+        line-height: 1.3;
+    }
+
+    .hero-text p {
+        font-size: 1rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+
+    .about,
+    .services,
+    .contact {
+        padding: 70px 20px;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .about-cards,
+    .services-cards,
+    .contact-container {
+        grid-template-columns: 1fr;
+    }
+
+    .service-card img {
+        height: 240px;
+    }
+
+    .chat-toggle {
+        right: 15px;
+        bottom: 20px;
+        padding: 12px 18px;
+    }
+
+    .chat-toggle span {
+        font-size: 0.9rem;
+    }
+
+    .chat-window {
+        right: 10px;
+        left: 10px;
+        width: auto;
+        bottom: 90px;
+    }
+
+    footer {
+        padding: 25px 15px;
+        font-size: 0.9rem;
+    }
+}
     </style>
 </head>
 <body>
